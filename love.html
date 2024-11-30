@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Love</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            font-family: 'Poppins', sans-serif;
+            background: #121212;
+            overflow: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            background: linear-gradient(135deg, #9c27b0, #673ab7); /* Purple gradient */
+            width: 300px;
+            padding: 20px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            left: 0; /* Sidebar visible by default */
+            top: 0;
+            bottom: 0;
+            transition: left 0.3s ease-out, box-shadow 0.3s ease-in-out;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .sidebar.closed {
+            left: -300px; /* When closed, hide sidebar */
+        }
+
+        .logo {
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0; }
+            to { text-shadow: 0 0 20px #673ab7, 0 0 30px #9c27b0; }
+        }
+
+        .sidebar button, .chat-history-item {
+            background-color: #9c27b0; /* Purple for buttons */
+            border: none;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin: 8px 0;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+        }
+
+        .sidebar button:hover, .chat-history-item:hover {
+            background: #673ab7; /* Lighter purple on hover */
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.8);
+        }
+
+        /* Chat Container Styling */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+            background: #2e2e2e; /* Dark grey for chat area */
+            margin-left: 300px; /* Sidebar is open by default */
+            transition: margin-left 0.3s ease-out;
+        }
+
+        /* Main Logo in Body with Animation */
+        .main-logo {
+            font-size: 3rem;
+            color: #9c27b0; /* Purple color */
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            animation: nonStopGlow 3s linear infinite, bounce 2s infinite;
+        }
+
+        /* Non-Stop Glow Animation for Logo */
+        @keyframes nonStopGlow {
+            0% {
+                text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0, 0 0 30px #673ab7;
+            }
+            50% {
+                text-shadow: 0 0 20px #673ab7, 0 0 40px #9c27b0, 0 0 60px #673ab7;
+            }
+            100% {
+                text-shadow: 0 0 10px #9c27b0, 0 0 20px #9c27b0, 0 0 30px #673ab7;
+            }
+        }
+
+        /* Bounce Effect for Logo */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .chat-log {
+            height: 75vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            animation: fadeIn 0.5s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background-color: #3f51b5; /* Blue for user messages */
+            text-align: right;
+            box-shadow: 0 4px 10px rgba(63, 81, 181, 0.6); /* Soft blue glow */
+        }
+
+        .bot-message {
+            background-color: #8bc34a; /* Green for bot messages */
+            box-shadow: 0 4px 10px rgba(139, 195, 74, 0.6); /* Green glow */
+        }
+
+        /* Input Group */
+        .input-group {
+            background: #333;
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            margin-right: 10px;
+            background: #444;
+            color: white;
+            animation: pulseInput 2s infinite alternate;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Input focus animation */
+        @keyframes pulseInput {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .input-group button {
+            background-color: #9c27b0;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .input-group button:hover {
+            background: #673ab7;
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.6);
+        }
+
+        /* Toggle Button Styling */
+        .toggle-sidebar-btn {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background-color: #9c27b0;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.6);
+        }
+
+        .toggle-sidebar-btn:hover {
+            transform: scale(1.1);
+            background-color: #673ab7;
+            box-shadow: 0 4px 25px rgba(156, 39, 176, 0.8);
+        }
+
+        /* Typing Animation for Bot */
+        .bot-message.typing::after {
+            content: "...";
+            animation: typing 1.5s infinite step-end;
+        }
+
+        @keyframes typing {
+            0% { content: "."; }
+            33% { content: ".."; }
+            66% { content: "..."; }
+            100% { content: "."; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toggle Button -->
+    <button class="toggle-sidebar-btn" id="toggle-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar" id="sidebar"><br><br>
+        <!-- Changed Logo Text to "I Love You So Much!" -->
+        <div class="logo">I Love You So Much!</div>
+        <button id="new-chat"><i class="fas fa-plus"></i> New Chat</button>
+        <div id="chat-history" class="chat-history"></div>
+    </div>
+
+    <div class="chat-container" id="chat-container">
+        <!-- Main Logo in the Body -->
+        <div class="main-logo">Happy 19th Birthday Love!</div>
+
+        <div class="chat-log" id="chat-log"></div>
+
+        <div class="input-group">
+            <input type="text" id="user-input" placeholder="Type a message...">
+            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let responseIndex = 0;
+        const responses = [
+            "Happy birthday, Ashlei, my love. 🎉🎂",
+            "I hope your day is filled with love and joy!",
+            "You're the best thing that's ever happened to me.",
+            "May all your wishes come true today, my love. I Love You!",
+            "I'm grateful for every moment spent with you. Stay strong for both of us."
+        ];
+
+        const chatSessions = [];
+
+        document.getElementById('send-button').addEventListener('click', () => {
+            const input = document.getElementById('user-input').value;
+            if (input.trim()) {
+                addMessage(input, 'user-message');
+                document.getElementById('user-input').value = '';
+                setTimeout(getBotResponse, 1000);
+            }
+        });
+
+        function getBotResponse() {
+            if (responseIndex < responses.length) {
+                addMessage(responses[responseIndex], 'bot-message');
+                responseIndex++;
+            } else {
+                addMessage("I'm out of responses, but remember this is my message greet for you! HAPPY 19TH BIRTHDAY MY PRETTIEST GORGEOUS WIFEEEE! hehehehehhe I LOVE YOUUUUU SO MUCH LOVE! 19 ka na love hehe pero habang mas tumatanda ka mas gumaganda ka bb hehe. Stay healthy mahal, sana matuto ka nang matulog ng maaga at di mag puyat HAHAHA goodluckkk sa studies mo love and sana maging successful ka sa kinuha mong course, excited nako makita kang lawyer soon love! Stay strong din satin love, thankyouuu kasi kahit ilang beses na kitang nasaktan at napaiyak andiyan ka parin at nagtitiis sakin, don't worry love promise po ginagawa ko na best ko para maging better at para din makita mo na ako sa future mo hehe. Sana mag enjoy tayo mamaya love, I love youuu so muchhhh sa pinaka magandang babae na nakilala ko sa buong mundo mwaaa! Happy birthday ulit love! More birthdays to come and more candles to blow (sana hindi lang candle) HAHAHAHAHAHAHAAHHAHAHAHHAHAHAHAHAHAHHAAH JOKE", 'bot-message');
+            }
+        }
+
+        function addMessage(text, className) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', className);
+            messageElement.textContent = text;
+
+            // Simulate typing effect for bot
+            if (className === 'bot-message') {
+                messageElement.classList.add('typing');
+            }
+
+            document.getElementById('chat-log').appendChild(messageElement);
+            document.getElementById('chat-log').scrollTop = document.getElementById('chat-log').scrollHeight;
+
+            // Remove typing effect after message is added
+            setTimeout(() => {
+                if (className === 'bot-message') {
+                    messageElement.classList.remove('typing');
+                }
+            }, 1500);
+        }
+
+        function startNewChat() {
+            saveCurrentChat();
+            document.getElementById('chat-log').innerHTML = '';
+            responseIndex = 0;
+        }
+
+        function saveCurrentChat() {
+            const chatLog = document.getElementById('chat-log');
+            if (chatLog.innerHTML.trim() === '') return;
+            const chatContent = chatLog.innerHTML;
+            chatSessions.push({ content: chatContent });
+
+            const chatItem = document.createElement('button');
+            chatItem.className = 'chat-history-item';
+            chatItem.textContent = "Happy Birthday Ashlei my Love";
+            chatItem.addEventListener('click', () => loadChat(chatContent));
+            document.getElementById('chat-history').appendChild(chatItem);
+
+            // Check if there are any saved chats, show/hide history
+            if (chatSessions.length > 0) {
+                document.getElementById('chat-history').style.display = 'block';
+            }
+        }
+
+        function loadChat(chatContent) {
+            document.getElementById('chat-log').innerHTML = chatContent;
+        }
+
+        // Sidebar Toggle
+        document.getElementById('toggle-btn').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+            document.getElementById('chat-container').style.marginLeft = sidebar.classList.contains('closed') ? '0' : '300px';
+        });
+
+        // New Chat Button functionality
+        document.getElementById('new-chat').addEventListener('click', startNewChat);
+    </script>
+</body>
+</html>
